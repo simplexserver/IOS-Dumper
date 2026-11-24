@@ -16,6 +16,7 @@ concurrency:
 
 jobs:
   build-and-publish:
+    if: github.ref == 'refs/heads/main'
     name: Build private source and publish binaries
     runs-on: ubuntu-24.04
     timeout-minutes: 90
@@ -145,8 +146,12 @@ jobs:
           mkdir -p "$GITHUB_WORKSPACE/dist"
           cd source/Theos
           make clean
-          set -o pipefail
-          make package FINALPACKAGE=1 DEBUG=0 2>&1 | tee "$GITHUB_WORKSPACE/dist/SimpleXDumper-build.log"
+          if ! make package FINALPACKAGE=1 DEBUG=0 > "$GITHUB_WORKSPACE/dist/SimpleXDumper-build.log" 2>&1; then
+            echo "::error::Theos build failed; the final build output is shown below."
+            tail -n 80 "$GITHUB_WORKSPACE/dist/SimpleXDumper-build.log"
+            exit 1
+          fi
+          echo "Theos build completed successfully. Full compiler output was not published."
 
           DEB="$(find packages -maxdepth 1 -type f -name '*.deb' -print -quit)"
           test -n "$DEB"
