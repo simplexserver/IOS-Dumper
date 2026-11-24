@@ -1,0 +1,240 @@
+name: SimpleXDumper iOS UE4 Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - "BUILD_TRIGGER"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: simplexdumper-public-builder
+  cancel-in-progress: false
+
+jobs:
+  build-and-publish:
+    name: Build private source and publish binaries
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+
+    steps:
+      - name: Require private source read token
+        env:
+          SOURCE_TOKEN: ${{ secrets.DUMPER_SOURCE_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$SOURCE_TOKEN" ]]; then
+            echo "::error::Missing repository secret DUMPER_SOURCE_TOKEN. Add a fine-grained token with Contents: Read access to simplexserver/Dumper-Build."
+            exit 1
+          fi
+
+      - name: Checkout public release repository
+        uses: actions/checkout@v4
+        with:
+          repository: simplexserver/IOS-Dumper
+          ref: main
+          token: ${{ github.token }}
+          path: release
+          fetch-depth: 0
+
+      - name: Checkout private source repository
+        uses: actions/checkout@v4
+        with:
+          repository: simplexserver/Dumper-Build
+          ref: main
+          token: ${{ secrets.DUMPER_SOURCE_TOKEN }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Read and validate release version
+        id: version
+        working-directory: source
+        run: |
+          set -euo pipefail
+          VERSION="$(tr -d '[:space:]' < VERSION)"
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          echo "value=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Building SimpleXDumper $VERSION from $(git rev-parse HEAD)"
+
+      - name: Verify branded source and vendored dependencies
+        working-directory: source
+        run: |
+          set -euo pipefail
+          python3 tools/brand_project.py
+          test -s LICENSE
+          test -s Theos/Makefile
+          test -s Theos/control
+          test -s Theos/SimpleXDumper.plist
+          test -s Dumper/main_ios.mm
+          test -s Dumper/DumperMain.h
+          test -s libs/KittyMemory/KittyMemory/MemoryPatch.cpp
+          test -s libs/KittyMemoryEx/KittyMemoryEx/MemoryPatch.cpp
+          grep -Fq 'SimpleXDumper' Dumper/main_ios.mm
+          grep -Fq 'iOS UE4 Dumper' Dumper/main_ios.mm
+          grep -Fq 'Discord / Credits' Dumper/main_ios.mm
+          grep -Fq 'https://discord.gg/Kr2pvPfEUR' Dumper/main_ios.mm
+          grep -Fq 'SimpleXDumper.log' Dumper/DumperMain.cpp
+          grep -Fq 'Dump_' Dumper/Generator/Generators/Generator.cpp
+          grep -Fq '1.0.0' VERSION
+          echo "Source, branding, vendored dependencies, and credits checks passed."
+
+      - name: Install Linux build dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential clang-18 lld-18 llvm-18 llvm-18-tools \
+            libc++-18-dev libc++abi-18-dev dpkg-dev fakeroot \
+            perl python3 git curl unzip xz-utils file rsync
+          make --version | head -1
+
+      - name: Install Theos and Linux Mach-O toolchain
+        run: |
+          set -euo pipefail
+          git clone --recursive --depth 1 https://github.com/theos/theos.git "$HOME/theos"
+          test -f "$HOME/theos/makefiles/common.mk"
+
+          TOOLCHAIN_BIN="$HOME/theos/toolchain/linux/iphone/bin"
+          mkdir -p "$TOOLCHAIN_BIN"
+          LLVM_BIN="/usr/lib/llvm-18/bin"
+          test -x "$LLVM_BIN/clang"
+          test -x "$LLVM_BIN/clang++"
+
+          for tool in clang clang++ cc c++; do
+            ln -sf "$LLVM_BIN/$tool" "$TOOLCHAIN_BIN/$tool"
+          done
+          for tool in llvm-ar llvm-ranlib llvm-nm llvm-objdump llvm-strip llvm-lipo; do
+            if [[ -x "$LLVM_BIN/$tool" ]]; then
+              ln -sf "$LLVM_BIN/$tool" "$TOOLCHAIN_BIN/$tool"
+            fi
+          done
+
+          LD64_BIN="$LLVM_BIN/ld64.lld"
+          test -x "$LD64_BIN"
+          "$LD64_BIN" --version
+          ln -sf "$LD64_BIN" "$TOOLCHAIN_BIN/ld64.lld"
+          ln -sf "$TOOLCHAIN_BIN/ld64.lld" "$TOOLCHAIN_BIN/ld"
+
+          test -x "$TOOLCHAIN_BIN/clang"
+          "$TOOLCHAIN_BIN/clang" --version | head -1
+          "$TOOLCHAIN_BIN/ld64.lld" --version
+          echo "THEOS=$HOME/theos" >> "$GITHUB_ENV"
+          echo "$TOOLCHAIN_BIN" >> "$GITHUB_PATH"
+
+      - name: Install iPhoneOS 16.5 SDK
+        run: |
+          set -euo pipefail
+          mkdir -p "$THEOS/sdks"
+          SDK_SOURCE="$RUNNER_TEMP/theos-sdks"
+          rm -rf "$SDK_SOURCE"
+          git clone --depth 1 --filter=blob:none --sparse https://github.com/theos/sdks.git "$SDK_SOURCE"
+          git -C "$SDK_SOURCE" sparse-checkout set iPhoneOS16.5.sdk
+          test -d "$SDK_SOURCE/iPhoneOS16.5.sdk"
+          ln -s "$SDK_SOURCE/iPhoneOS16.5.sdk" "$THEOS/sdks/iPhoneOS16.5.sdk"
+          ls -ld "$THEOS/sdks/iPhoneOS16.5.sdk"
+
+      - name: Build rootless package with Theos
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$GITHUB_WORKSPACE/dist"
+          cd source/Theos
+          make clean
+          set -o pipefail
+          make package FINALPACKAGE=1 DEBUG=0 2>&1 | tee "$GITHUB_WORKSPACE/dist/SimpleXDumper-build.log"
+
+          DEB="$(find packages -maxdepth 1 -type f -name '*.deb' -print -quit)"
+          test -n "$DEB"
+          [[ "$(dpkg-deb -f "$DEB" Package)" == "com.simplex.simplexdumper" ]]
+          [[ "$(dpkg-deb -f "$DEB" Version)" == "$VERSION" ]]
+
+          ROOTFS="$RUNNER_TEMP/simplexdumper-rootfs"
+          rm -rf "$ROOTFS"
+          mkdir -p "$ROOTFS"
+          dpkg-deb -x "$DEB" "$ROOTFS"
+          DYLIB="$(find "$ROOTFS" -type f -name 'SimpleXDumper.dylib' -print -quit)"
+          test -n "$DYLIB"
+
+          cp "$DYLIB" "$GITHUB_WORKSPACE/dist/SimpleXDumper.dylib"
+          cp "$DEB" "$GITHUB_WORKSPACE/dist/SimpleXDumper.deb"
+          cp "$GITHUB_WORKSPACE/source/CHANGELOG.md" "$GITHUB_WORKSPACE/dist/CHANGELOG.md"
+          printf 'VERSION=%s\nSOURCE_SHA=%s\n' "$VERSION" "$(git -C "$GITHUB_WORKSPACE/source" rev-parse HEAD)" > "$GITHUB_WORKSPACE/dist/BUILD_INFO.txt"
+
+      - name: Verify Mach-O, architecture, and package identity
+        run: |
+          set -euo pipefail
+          file dist/SimpleXDumper.dylib
+          llvm-lipo -info dist/SimpleXDumper.dylib
+          file dist/SimpleXDumper.dylib | grep -q 'Mach-O'
+          llvm-lipo -archs dist/SimpleXDumper.dylib | grep -qw arm64
+          [[ "$(dpkg-deb -f dist/SimpleXDumper.deb Package)" == "com.simplex.simplexdumper" ]]
+          [[ "$(dpkg-deb -f dist/SimpleXDumper.deb Version)" == "${{ steps.version.outputs.value }}" ]]
+          strings dist/SimpleXDumper.dylib | grep -Fq 'SimpleXDumper'
+          if strings dist/SimpleXDumper.dylib | grep -Fq 'MobileDumper-7'; then
+            echo "::error::A stale product string remains in the dylib"
+            exit 1
+          fi
+          sha256sum dist/SimpleXDumper.dylib dist/SimpleXDumper.deb > dist/SHA256SUMS.txt
+          cat dist/SHA256SUMS.txt
+
+      - name: Upload binary-only build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SimpleXDumper-iOS-UE4-v${{ steps.version.outputs.value }}-${{ github.run_number }}
+          path: |
+            dist/SimpleXDumper.dylib
+            dist/SimpleXDumper.deb
+            dist/SHA256SUMS.txt
+            dist/BUILD_INFO.txt
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish Latest and version archive
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          set -euo pipefail
+          RELEASE_DIR="$GITHUB_WORKSPACE/release"
+          mkdir -p "$RELEASE_DIR/Latest" "$RELEASE_DIR/Archive/v$VERSION"
+          find "$RELEASE_DIR/Latest" -maxdepth 1 -type f -delete
+          rm -rf "$RELEASE_DIR/Archive/v$VERSION"
+          mkdir -p "$RELEASE_DIR/Archive/v$VERSION"
+
+          cp dist/SimpleXDumper.dylib dist/SimpleXDumper.deb "$RELEASE_DIR/Latest/"
+          cp dist/SimpleXDumper.dylib dist/SimpleXDumper.deb "$RELEASE_DIR/Archive/v$VERSION/"
+          cp dist/CHANGELOG.md "$RELEASE_DIR/Archive/v$VERSION/CHANGELOG.md"
+          cp source/VERSION "$RELEASE_DIR/VERSION"
+
+          python3 - "$RELEASE_DIR/README.md" "$VERSION" <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+
+          readme = Path(sys.argv[1])
+          version = sys.argv[2]
+          content = readme.read_text(encoding="utf-8")
+          content = re.sub(r"\*\*SimpleXDumper v[^*]+\*\*", f"**SimpleXDumper v{version}**", content, count=1)
+          content = re.sub(r"Archive/v[0-9.]+/CHANGELOG\.md", f"Archive/v{version}/CHANGELOG.md", content)
+          readme.write_text(content, encoding="utf-8")
+          PY
+
+          git -C "$RELEASE_DIR" config user.name "github-actions[bot]"
+          git -C "$RELEASE_DIR" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C "$RELEASE_DIR" add Latest Archive/v"$VERSION" VERSION README.md
+          if ! git -C "$RELEASE_DIR" diff --cached --quiet; then
+            git -C "$RELEASE_DIR" commit -m "Publish SimpleXDumper v$VERSION"
+            git -C "$RELEASE_DIR" push origin main
+          fi
+
+          {
+            echo "## SimpleXDumper build published"
+            echo ""
+            echo "- Version: $VERSION"
+            echo "- Source commit: $(git -C source rev-parse HEAD)"
+            echo "- Release repository: simplexserver/IOS-Dumper"
+          } >> "$GITHUB_STEP_SUMMARY"
