@@ -7,7 +7,7 @@ Version 1.0.0 currently targets UE4. It is intended to help developers and autho
 ## Downloads
 
 - [Latest iOS dylib](Latest/SimpleXDumper.dylib)
-- [Latest rootless Theos package](Latest/com.simplex.simplexdumper_1.0.0_iphoneos-arm64.deb)
+- [Latest rootless Theos package](Latest/SimpleXDumper.deb)
 - [Version 1.0.0 changelog](Versions/v1.0.0/CHANGELOG.md)
 - [Version 1.0.0 checksums](Versions/v1.0.0/SHA256SUMS.txt)
 
