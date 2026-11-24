@@ -8,6 +8,8 @@ Version 1.0.0 currently targets UE4. It is intended to help developers and autho
 
 - [Latest iOS dylib](Latest/SimpleXDumper.dylib)
 - [Latest rootless Theos package](Latest/SimpleXDumper.deb)
+- [Version 1.0.0 dylib](Versions/v1.0.0/SimpleXDumper.dylib)
+- [Version 1.0.0 rootless package](Versions/v1.0.0/SimpleXDumper.deb)
 - [Version 1.0.0 changelog](Versions/v1.0.0/CHANGELOG.md)
 - [Version 1.0.0 checksums](Versions/v1.0.0/SHA256SUMS.txt)
 
