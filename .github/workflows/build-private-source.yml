@@ -32,6 +32,22 @@ jobs:
             exit 1
           fi
 
+      - name: Validate private source repository access
+        env:
+          SOURCE_TOKEN: ${{ secrets.DUMPER_SOURCE_TOKEN }}
+        run: |
+          set -euo pipefail
+          STATUS="$(curl --silent --show-error --output "$RUNNER_TEMP/source-version.json" --write-out '%{http_code}' \
+            --header "Accept: application/vnd.github+json" \
+            --header "Authorization: Bearer $SOURCE_TOKEN" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/simplexserver/Dumper-Build/contents/VERSION?ref=main")"
+          if [[ "$STATUS" != "200" ]]; then
+            echo "::error::DUMPER_SOURCE_TOKEN cannot read Dumper-Build/VERSION (HTTP $STATUS). Check token owner, selected repository, Contents: Read permission, approval, and expiry."
+            exit 1
+          fi
+          echo "Private source contents permission verified."
+
       - name: Checkout public release repository
         uses: actions/checkout@v4
         with:
