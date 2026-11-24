@@ -55,6 +55,6 @@ https://discord.gg/Kr2pvPfEUR
 - `Latest/` contains only the current `.dylib` and `.deb`.
 - `Archive/v1.0.0/` preserves the versioned `.dylib`, `.deb`, and changelog.
 
-This is a public binary-release repository. Project source, build configuration, CI logs, and debug symbols are maintained separately and are not published here.
+This is a public binary-release repository. The full project source, Theos build files, CI logs, and debug symbols remain in the private `simplexserver/Dumper-Build` repository. The workflow in `.github/workflows/build-private-source.yml` is an orchestration-only builder: it checks out the private source on an ephemeral runner and publishes only the release binaries and version changelog here. To run it, configure the `DUMPER_SOURCE_TOKEN` Actions secret with a fine-grained token limited to `simplexserver/Dumper-Build` and `Contents: Read` permission.
 
 Use the tool only with games, apps, and devices that you own or are authorized to inspect.
