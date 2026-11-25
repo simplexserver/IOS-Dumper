@@ -1,6 +1,6 @@
 # SimpleX Toolkit — iOS Runtime & Engine Toolkit
 
-**SimpleX Toolkit v1.2.0** is an iOS-only runtime inspection and engine dumper with an existing Unreal Engine 4 pipeline and a newly integrated live Unity IL2CPP runtime dumper.
+**SimpleX Toolkit v1.2.1** is an iOS-only runtime inspection and engine dumper with an existing Unreal Engine 4 pipeline and a newly integrated live Unity IL2CPP runtime dumper.
 
 The floating paw toggle appears in normal UIKit user apps. Unsupported apps display **NOT SUPPORTED FOR THIS APP** and the supported engine families. The menu retains the engine action(s), Logs, Files, and the clickable community/contact URL. The separate loaded-image inventory view is removed.
 
@@ -8,9 +8,10 @@ The floating paw toggle appears in normal UIKit user apps. Unsupported apps disp
 
 - [Latest iOS dylib](Latest/SimpleXDumper.dylib)
 - [Latest rootless Theos package](Latest/SimpleXDumper.deb)
-- [Archived v1.2.0 dylib](Archive/v1.2.0/SimpleXDumper.dylib)
-- [Archived v1.2.0 rootless package](Archive/v1.2.0/SimpleXDumper.deb)
-- [v1.2.0 changelog](Archive/v1.2.0/CHANGELOG.md)
+- [Archived v1.2.1 dylib](Archive/v1.2.1/SimpleXDumper.dylib)
+- [Archived v1.2.1 rootless package](Archive/v1.2.1/SimpleXDumper.deb)
+- [v1.2.1 changelog](Archive/v1.2.1/CHANGELOG.md)
+- [Previous v1.2.0 archive](Archive/v1.2.0/)
 - [Previous v1.1.0 archive](Archive/v1.1.0/)
 - [Previous v1.0.0 archive](Archive/v1.0.0/)
 
