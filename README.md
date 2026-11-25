@@ -1,16 +1,24 @@
 # SimpleX Toolkit — iOS Runtime & Engine Toolkit
 
-**SimpleX Toolkit v1.2.1** is an iOS-only runtime inspection and engine dumper with an existing Unreal Engine 4 pipeline and a newly integrated live Unity IL2CPP runtime dumper.
+**SimpleX Toolkit v1.2.2** is an iOS-only runtime inspection and engine dumper with an existing Unreal Engine 4 pipeline and a newly integrated live Unity IL2CPP runtime dumper.
 
 The floating paw toggle appears in normal UIKit user apps. Every app displays the supported engine families; unsupported apps display **NOT SUPPORTED FOR THIS APP** while retaining the contact link. The menu retains the engine action(s), Logs, Files, and the clickable community/contact URL. The separate loaded-image inventory view is removed.
+
+## Files browser
+
+Tap a folder to open it and tap a file to inspect it. Select mode enables checkboxes and batch sharing, renaming, and deletion. The plus control creates folders. Supported media and documents use iOS Quick Look; source and text files use a lightweight monospace viewer. Large text files are read in bounded 128 KiB pages instead of being loaded into memory all at once. Small text files up to 512 KiB can be edited and atomically saved; larger files remain paged and read-only. Directory scans run off the main thread.
+
+## Logs console
+
+The console provides All, Dump, Files, Unity, System, and Other filters, plus live search with the native iOS keyboard. Export shares exactly the active filter and search result. Tapping outside the panel, the close control, or swiping upward dismisses it. The retained history is capped at 1,200 entries. Startup diagnostics include timestamp, bundle ID, game/app version, iOS version, and hardware model.
 
 ## Downloads
 
 - [Latest iOS dylib](Latest/SimpleXDumper.dylib)
-- [Latest rootless Theos package](Latest/SimpleXDumper.deb)
-- [Archived v1.2.1 dylib](Archive/v1.2.1/SimpleXDumper.dylib)
-- [Archived v1.2.1 rootless package](Archive/v1.2.1/SimpleXDumper.deb)
-- [v1.2.1 changelog](Archive/v1.2.1/CHANGELOG.md)
+- [Latest rootless package](Latest/SimpleXDumper.deb)
+- [Archived v1.2.2 dylib](Archive/v1.2.2/SimpleXDumper.dylib)
+- [Archived v1.2.2 package](Archive/v1.2.2/SimpleXDumper.deb)
+- [v1.2.2 changelog](Archive/v1.2.2/CHANGELOG.md)
 - [Previous v1.2.0 archive](Archive/v1.2.0/)
 - [Previous v1.1.0 archive](Archive/v1.1.0/)
 - [Previous v1.0.0 archive](Archive/v1.0.0/)

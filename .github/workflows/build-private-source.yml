@@ -87,6 +87,8 @@ jobs:
           test -s Theos/control
           test -s Theos/SimpleXDumper.plist
           test -s Dumper/main_ios.mm
+          test -s Dumper/UI/iOS/KittyFilePreviewController.h
+          test -s Dumper/UI/iOS/KittyFilePreviewController.mm
           test -s Dumper/Engine/Unity/UnityMetadataDumper.cpp
           test -s Dumper/Engine/Unity/UnityRuntimeDumper.cpp
           test -s tests/unity_metadata_test.cpp
@@ -99,13 +101,17 @@ jobs:
           grep -Fq 'SimpleX Toolkit' Dumper/main_ios.mm
           grep -Fq 'Unreal Engine 4 Dumper' Dumper/main_ios.mm
           grep -Fq 'Unity IL2CPP Dumper' Dumper/main_ios.mm
+          grep -Fq 'LogStartupDiagnostics' Dumper/main_ios.mm
+          grep -Fq 'renameSelection' Dumper/UI/iOS/KittyFileBrowser.mm
+          grep -Fq 'exportLogs' Dumper/UI/iOS/KittyConsoleOverlay.mm
+          grep -Fq 'QuickLook' Theos/Makefile
           grep -Fq 'Supported engines: UE4 • Unity IL2CPP' Dumper/main_ios.mm
           grep -Fq 'kTripletSectionCount = 31' Dumper/Engine/Unity/UnityMetadataDumper.cpp
           ! grep -Fq 'Discord / Credits' Dumper/main_ios.mm
           grep -Fq 'https://discord.gg/Kr2pvPfEUR' Dumper/main_ios.mm
           grep -Fq 'SimpleXToolkit.log' Dumper/DumperMain.cpp
           grep -Fq 'Dump_' Dumper/Generator/Generators/Generator.cpp
-          grep -Fq '1.2.1' VERSION
+          grep -Fq '1.2.2' VERSION
           echo "Source, branding, UE4, Unity runtime, vendored dependencies, and credits checks passed."
 
       - name: Install Linux build dependencies
