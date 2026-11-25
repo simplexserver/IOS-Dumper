@@ -88,18 +88,22 @@ jobs:
           test -s Theos/SimpleXDumper.plist
           test -s Dumper/main_ios.mm
           test -s Dumper/Engine/Unity/UnityMetadataDumper.cpp
+          test -s Dumper/Engine/Unity/UnityRuntimeDumper.cpp
+          test -s Dumper/Engine/Unity/Runtime/Dumper.cpp
+          test -s Dumper/Engine/Unity/Runtime/Il2cpp.cpp
+          test -s Dumper/Engine/Unity/Runtime/THIRD_PARTY_NOTICES.md
           test -s Dumper/DumperMain.h
           test -s libs/KittyMemory/KittyMemory/MemoryPatch.cpp
           test -s libs/KittyMemoryEx/KittyMemoryEx/MemoryPatch.cpp
           grep -Fq 'SimpleX Toolkit' Dumper/main_ios.mm
           grep -Fq 'Unreal Engine 4 Dumper' Dumper/main_ios.mm
-          grep -Fq 'Unity IL2CPP Metadata' Dumper/main_ios.mm
+          grep -Fq 'Unity IL2CPP Dumper' Dumper/main_ios.mm
           ! grep -Fq 'Discord / Credits' Dumper/main_ios.mm
           grep -Fq 'https://discord.gg/Kr2pvPfEUR' Dumper/main_ios.mm
           grep -Fq 'SimpleXToolkit.log' Dumper/DumperMain.cpp
           grep -Fq 'Dump_' Dumper/Generator/Generators/Generator.cpp
-          grep -Fq '1.1.0' VERSION
-          echo "Source, branding, vendored dependencies, and credits checks passed."
+          grep -Fq '1.2.0' VERSION
+          echo "Source, branding, UE4, Unity runtime, vendored dependencies, and credits checks passed."
 
       - name: Install Linux build dependencies
         run: |
