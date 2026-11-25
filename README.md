@@ -44,9 +44,7 @@ The `.deb` is a rootless jailbreak tweak package. The standalone dylib requires 
 - **Unity — planned.** Unity runtime support is not implemented in v1.0.0.
 - Additional engine families and game-specific UE4 profiles may be evaluated for future releases.
 
-## Discord / credits
-
-The in-app **Discord / Credits** button copies the invite and attempts to open the community server:
+## Discord / credits:
 
 https://discord.gg/Kr2pvPfEUR
 
