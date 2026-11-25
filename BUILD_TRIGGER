@@ -1,2 +1,2 @@
-Build SimpleX Toolkit v1.1.0 from simplexserver/Dumper-Build main.
-Rebuild after UE4 offset report field correction: 2026-11-25T00:57:00Z
+Build SimpleX Toolkit v1.2.0 from simplexserver/Dumper-Build main.
+Restore paw toggle and integrate live iOS Unity IL2CPP runtime dumper: 2026-11-25T02:38:00Z
