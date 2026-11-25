@@ -35,7 +35,7 @@ The Unity dumper runs inside the live iOS app. It resolves IL2CPP runtime export
 - `Assembly/*.cs` — per-image/assembly declarations
 - fields and field offsets, properties, methods, parameters, and method RVAs
 - `Script.json` — native method RVA/name records for the IDA workflow
-- `Summary.txt` and `UnityDumper.log`
+- `Summary.txt` and `SimpleXUnity.log`
 - optional raw metadata/string extraction when a supported global-metadata.dat layout is available
 
 This is a live IL2CPP dumper, not only a string-table extractor. It still depends on an initialized runtime and accessible IL2CPP exports. Some builds strip or hide exports, use custom runtime layouts, encrypt/relocate metadata, or require game-specific work. It does not guarantee complete generic constraints, custom attributes, all registration layouts, or native code reconstruction. The optional raw metadata parser is separately limited to known stable header layouts. Unity Mono is not supported.
