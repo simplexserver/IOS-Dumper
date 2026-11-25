@@ -1,3 +1,3 @@
 Build SimpleX Toolkit v1.2.2 from simplexserver/Dumper-Build main.
-Rename preview action button property outside the Cocoa copy method family.
-Source commit: c18ccd25850a465d3468f6da8b8d22dc9f89bdc1
+Avoid Cocoa new method-family naming for the file browser create-folder button.
+Source commit: 9cd5345b58498d2e52ee5cb2a0ecbef50eec98a0
