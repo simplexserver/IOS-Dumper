@@ -89,6 +89,7 @@ jobs:
           test -s Dumper/main_ios.mm
           test -s Dumper/Engine/Unity/UnityMetadataDumper.cpp
           test -s Dumper/Engine/Unity/UnityRuntimeDumper.cpp
+          test -s tests/unity_metadata_test.cpp
           test -s Dumper/Engine/Unity/Runtime/Dumper.cpp
           test -s Dumper/Engine/Unity/Runtime/Il2cpp.cpp
           test -s Dumper/Engine/Unity/Runtime/THIRD_PARTY_NOTICES.md
@@ -98,6 +99,8 @@ jobs:
           grep -Fq 'SimpleX Toolkit' Dumper/main_ios.mm
           grep -Fq 'Unreal Engine 4 Dumper' Dumper/main_ios.mm
           grep -Fq 'Unity IL2CPP Dumper' Dumper/main_ios.mm
+          grep -Fq 'Supported engines: UE4 • Unity IL2CPP' Dumper/main_ios.mm
+          grep -Fq 'kTripletSectionCount = 31' Dumper/Engine/Unity/UnityMetadataDumper.cpp
           ! grep -Fq 'Discord / Credits' Dumper/main_ios.mm
           grep -Fq 'https://discord.gg/Kr2pvPfEUR' Dumper/main_ios.mm
           grep -Fq 'SimpleXToolkit.log' Dumper/DumperMain.cpp
@@ -114,6 +117,16 @@ jobs:
             libc++-18-dev libc++abi-18-dev dpkg-dev fakeroot \
             perl python3 git curl unzip xz-utils file rsync
           make --version | head -1
+
+      - name: Run Unity metadata parser regression tests
+        working-directory: source
+        run: |
+          set -euo pipefail
+          g++ -std=c++20 -Wall -Wextra -Werror -I Dumper/Engine/Unity \
+            Dumper/Engine/Unity/UnityMetadataDumper.cpp \
+            tests/unity_metadata_test.cpp \
+            -o /tmp/simplex-unity-metadata-test
+          /tmp/simplex-unity-metadata-test
 
       - name: Install Theos and Linux Mach-O toolchain
         run: |

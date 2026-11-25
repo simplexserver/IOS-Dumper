@@ -1,2 +1,3 @@
 Build SimpleX Toolkit v1.2.1 from simplexserver/Dumper-Build main.
-Fix Unity live dumper output-directory initialization before Script.json creation: 2026-11-25T02:52:00Z
+Fix Unity metadata v38-v39 section-triplet parsing and gate publication on parser regression tests.
+Source commit: 0f4db740d43164273ccbce205aea55a00e674de5

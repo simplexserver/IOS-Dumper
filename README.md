@@ -2,7 +2,7 @@
 
 **SimpleX Toolkit v1.2.1** is an iOS-only runtime inspection and engine dumper with an existing Unreal Engine 4 pipeline and a newly integrated live Unity IL2CPP runtime dumper.
 
-The floating paw toggle appears in normal UIKit user apps. Unsupported apps display **NOT SUPPORTED FOR THIS APP** and the supported engine families. The menu retains the engine action(s), Logs, Files, and the clickable community/contact URL. The separate loaded-image inventory view is removed.
+The floating paw toggle appears in normal UIKit user apps. Every app displays the supported engine families; unsupported apps display **NOT SUPPORTED FOR THIS APP** while retaining the contact link. The menu retains the engine action(s), Logs, Files, and the clickable community/contact URL. The separate loaded-image inventory view is removed.
 
 ## Downloads
 
@@ -39,7 +39,7 @@ The Unity dumper runs inside the live iOS app. It resolves IL2CPP runtime export
 - `Summary.txt` and `SimpleXUnity.log`
 - optional raw metadata/string extraction when a supported global-metadata.dat layout is available
 
-This is a live IL2CPP dumper, not only a string-table extractor. It still depends on an initialized runtime and accessible IL2CPP exports. Some builds strip or hide exports, use custom runtime layouts, encrypt/relocate metadata, or require game-specific work. It does not guarantee complete generic constraints, custom attributes, all registration layouts, or native code reconstruction. The optional raw metadata parser is separately limited to known stable header layouts. Unity Mono is not supported.
+This is a live IL2CPP dumper, not only a string-table extractor. It still depends on an initialized runtime and accessible IL2CPP exports. Some builds strip or hide exports, use custom runtime layouts, encrypt/relocate metadata, or require game-specific work. It does not guarantee complete generic constraints, custom attributes, all registration layouts, or native code reconstruction. The optional raw metadata sidecar accepts legacy pair headers (versions 16–35) and 31-section triplet headers (versions 32–39). For v39 it validates all section offsets, sizes, and counts; preserves the original global-metadata.dat; and exports the metadata string heap. It does not reinterpret variable-width v39 literal/type/method records as legacy fixed-width data. Managed classes and members are exported by the live runtime dumper. Unity Mono is not supported.
 
 The runtime enumeration core is adapted under MIT; attribution and the original license are preserved in the private source repository.
 
