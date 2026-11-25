@@ -1,45 +1,46 @@
 # SimpleX Toolkit — iOS Runtime & Engine Toolkit
 
-**SimpleX Toolkit v1.1.0** is an iOS runtime inspection toolkit with an Unreal Engine 4 dumper and an experimental Unity IL2CPP metadata extractor.
+**SimpleX Toolkit v1.2.0** is an iOS-only runtime inspection and engine dumper with an existing Unreal Engine 4 pipeline and a newly integrated live Unity IL2CPP runtime dumper.
 
-The floating toolkit interface is designed to appear in normal UIKit user apps. When the current app does not match a supported engine, the menu reports **NOT SUPPORTED FOR THIS APP**, lists supported engine families, and keeps Logs, Files, Mach-O inventory, and the community contact link available.
+The floating paw toggle appears in normal UIKit user apps. Unsupported apps display **NOT SUPPORTED FOR THIS APP** and the supported engine families. The menu retains the engine action(s), Logs, Files, and the clickable community/contact URL. The separate loaded-image inventory view is removed.
 
 ## Downloads
 
 - [Latest iOS dylib](Latest/SimpleXDumper.dylib)
 - [Latest rootless Theos package](Latest/SimpleXDumper.deb)
-- [Archived v1.1.0 dylib](Archive/v1.1.0/SimpleXDumper.dylib)
-- [Archived v1.1.0 rootless package](Archive/v1.1.0/SimpleXDumper.deb)
-- [v1.1.0 changelog](Archive/v1.1.0/CHANGELOG.md)
+- [Archived v1.2.0 dylib](Archive/v1.2.0/SimpleXDumper.dylib)
+- [Archived v1.2.0 rootless package](Archive/v1.2.0/SimpleXDumper.deb)
+- [v1.2.0 changelog](Archive/v1.2.0/CHANGELOG.md)
+- [Previous v1.1.0 archive](Archive/v1.1.0/)
 - [Previous v1.0.0 archive](Archive/v1.0.0/)
 
 ## Engine support
 
 | Engine | Status | Capability |
 | --- | --- | --- |
-| Unreal Engine 4 | Supported when runtime layout/profile is compatible | object/name discovery, reflection output, generated C++ SDK, .usmap mappings, IDA/Ghidra mappings, Dumpspace JSON |
-| Unity IL2CPP | Experimental | global-metadata.dat validation, metadata string extraction, managed string literal extraction, raw metadata preservation |
-| Unity Mono | Not supported | no Mono runtime dumper in this release |
-| Other engines | Not supported | toolkit menu and general iOS inspection utilities remain available |
+| Unreal Engine 4 | Supported when runtime layout/profile is compatible | object/name discovery, reflection output, generated C++ SDK, .usmap, IDA/Ghidra mappings, Dumpspace JSON |
+| Unity IL2CPP | Live runtime dumper integrated; game compatibility requires device validation | assemblies/classes, fields/offsets, properties, methods/parameters, method RVAs, IDA Script.json, optional global-metadata export |
+| Unity Mono | Not supported | no Mono runtime backend |
+| Other engines | Not supported | toolkit opens in unsupported-app mode |
 
 ### Unreal Engine 4
 
-The UE4 pipeline retains the existing UEAnalyzerKitty discovery, automatic layout/offset detection, and per-title profile/decryption hooks. It can generate GObjects and reflection dumps, a C++ SDK with a validation test suite, UE4 mappings, IDA/Ghidra mapping output, and Dumpspace JSON. Compatibility depends on the game build, engine layout, and profile support; not every UE4 fork is guaranteed to work.
+The existing UE4 pipeline retains UEAnalyzerKitty discovery, layout/offset detection, and per-game profile/decryption hooks. It generates GObjects/reflection data, a C++ SDK with a validation suite, .usmap mappings, IDA/Ghidra mappings, and Dumpspace JSON. Compatibility depends on the game build and runtime layout; not every UE4 fork is guaranteed to work.
 
-### Unity IL2CPP — experimental
+### Unity IL2CPP
 
-The new iOS Unity component locates global-metadata.dat in common app-bundle locations, validates the metadata magic/version/section ranges, preserves the raw file, and exports MetadataStrings.txt and StringLiterals.txt alongside MetadataHeader.txt and Summary.txt.
+The Unity dumper runs inside the live iOS app. It resolves IL2CPP runtime exports from the loaded UnityFramework or libil2cpp image, obtains the IL2CPP domain, enumerates loaded assemblies/images/classes, and exports:
 
-The current parser accepts metadata versions 16–35 with the expected stable header prefix and 8-byte string-literal records. Version 38+ is rejected because its header/index layout changed. This is **not yet a complete Unity dumper**: assembly/type/field/method reconstruction, generics, native method address mapping, registration discovery, and protected metadata decryption are not implemented.
+- `Dump.cs` — combined runtime metadata declarations
+- `Assembly/*.cs` — per-image/assembly declarations
+- fields and field offsets, properties, methods, parameters, and method RVAs
+- `Script.json` — native method RVA/name records for the IDA workflow
+- `Summary.txt` and `UnityDumper.log`
+- optional raw metadata/string extraction when a supported global-metadata.dat layout is available
 
-## Other toolkit modules
+This is a live IL2CPP dumper, not only a string-table extractor. It still depends on an initialized runtime and accessible IL2CPP exports. Some builds strip or hide exports, use custom runtime layouts, encrypt/relocate metadata, or require game-specific work. It does not guarantee complete generic constraints, custom attributes, all registration layouts, or native code reconstruction. The optional raw metadata parser is separately limited to known stable header layouts. Unity Mono is not supported.
 
-- Loaded app Mach-O image inventory using dyld enumeration; the UE module picker no longer relies on selecting only the two largest frameworks.
-- KittyMemory-backed read-only memory-region and pointer inspection, safe scanning, and Mach-O inspection.
-- Runtime logs and an in-app Files browser with multi-select, ZIP compression, delete, and the native iOS share sheet.
-- UE4 runtime discovery report for GNames, GObjects, GEngine, GWorld, and ProcessEvent offsets when found.
-
-KittyMemory is used as a low-level inspection dependency; SimpleX Toolkit does not expose memory patch/write controls.
+The runtime enumeration core is adapted under MIT; attribution and the original license are preserved in the private source repository.
 
 ## Compatibility
 
@@ -47,14 +48,14 @@ KittyMemory is used as a low-level inspection dependency; SimpleX Toolkit does n
 - Architecture: arm64
 - Deployment target: iOS 14.0
 - Package: rootless Theos .deb plus matching dylib
-- Existing package identifier: com.simplex.simplexdumper (preserved for upgrades)
-- Binary filenames remain SimpleXDumper.dylib and SimpleXDumper.deb for compatibility
+- Existing package identifier: `com.simplex.simplexdumper` (preserved for upgrades)
+- Binary filenames remain `SimpleXDumper.dylib` and `SimpleXDumper.deb`
 
 The distributed binaries are unsigned. A standalone dylib requires a compatible injection/loading setup; it does not self-inject on stock iOS. Android is out of scope.
 
-## Contact and credits
+## Contact
 
-The in-app menu subtitle contains a clickable community/contact link (no separate credits button):
+The menu subtitle contains a clickable community/contact link (no separate credits button):
 
 https://discord.gg/Kr2pvPfEUR
 
