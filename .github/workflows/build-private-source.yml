@@ -1,4 +1,4 @@
-name: SimpleXDumper iOS UE4 Build
+name: SimpleX Toolkit iOS Runtime Build
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: simplexdumper-public-builder
+  group: simplex-toolkit-public-builder
   cancel-in-progress: false
 
 jobs:
@@ -75,7 +75,7 @@ jobs:
           VERSION="$(tr -d '[:space:]' < VERSION)"
           [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
           echo "value=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "Building SimpleXDumper $VERSION from $(git rev-parse HEAD)"
+          echo "Building SimpleX Toolkit $VERSION from $(git rev-parse HEAD)"
 
       - name: Verify branded source and vendored dependencies
         working-directory: source
@@ -87,16 +87,18 @@ jobs:
           test -s Theos/control
           test -s Theos/SimpleXDumper.plist
           test -s Dumper/main_ios.mm
+          test -s Dumper/Engine/Unity/UnityMetadataDumper.cpp
           test -s Dumper/DumperMain.h
           test -s libs/KittyMemory/KittyMemory/MemoryPatch.cpp
           test -s libs/KittyMemoryEx/KittyMemoryEx/MemoryPatch.cpp
-          grep -Fq 'SimpleXDumper' Dumper/main_ios.mm
-          grep -Fq 'iOS UE4 Dumper' Dumper/main_ios.mm
-          grep -Fq 'Discord / Credits' Dumper/main_ios.mm
+          grep -Fq 'SimpleX Toolkit' Dumper/main_ios.mm
+          grep -Fq 'Unreal Engine 4 Dumper' Dumper/main_ios.mm
+          grep -Fq 'Unity IL2CPP Metadata' Dumper/main_ios.mm
+          ! grep -Fq 'Discord / Credits' Dumper/main_ios.mm
           grep -Fq 'https://discord.gg/Kr2pvPfEUR' Dumper/main_ios.mm
-          grep -Fq 'SimpleXDumper.log' Dumper/DumperMain.cpp
+          grep -Fq 'SimpleXToolkit.log' Dumper/DumperMain.cpp
           grep -Fq 'Dump_' Dumper/Generator/Generators/Generator.cpp
-          grep -Fq '1.0.0' VERSION
+          grep -Fq '1.1.0' VERSION
           echo "Source, branding, vendored dependencies, and credits checks passed."
 
       - name: Install Linux build dependencies
@@ -206,7 +208,7 @@ jobs:
       - name: Upload binary-only build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SimpleXDumper-iOS-UE4-v${{ steps.version.outputs.value }}-${{ github.run_number }}
+          name: SimpleXToolkit-iOS-v${{ steps.version.outputs.value }}-${{ github.run_number }}
           path: |
             dist/SimpleXDumper.dylib
             dist/SimpleXDumper.deb
@@ -239,7 +241,7 @@ jobs:
           readme = Path(sys.argv[1])
           version = sys.argv[2]
           content = readme.read_text(encoding="utf-8")
-          content = re.sub(r"\*\*SimpleXDumper v[^*]+\*\*", f"**SimpleXDumper v{version}**", content, count=1)
+          content = re.sub(r"\*\*SimpleX Toolkit v[^*]+\*\*", f"**SimpleX Toolkit v{version}**", content, count=1)
           content = re.sub(r"Archive/v[0-9.]+/CHANGELOG\.md", f"Archive/v{version}/CHANGELOG.md", content)
           readme.write_text(content, encoding="utf-8")
           PY
@@ -248,7 +250,7 @@ jobs:
           git -C "$RELEASE_DIR" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git -C "$RELEASE_DIR" add Latest Archive/v"$VERSION" VERSION README.md
           if ! git -C "$RELEASE_DIR" diff --cached --quiet; then
-            git -C "$RELEASE_DIR" commit -m "Publish SimpleXDumper v$VERSION"
+            git -C "$RELEASE_DIR" commit -m "Publish SimpleX Toolkit v$VERSION"
             git -C "$RELEASE_DIR" push origin main
           fi
 

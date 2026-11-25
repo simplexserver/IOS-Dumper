@@ -1,58 +1,61 @@
-# iOS Dumper
+# SimpleX Toolkit — iOS Runtime & Engine Toolkit
 
-**SimpleXDumper v1.0.0** is an iOS runtime dumper and SDK generator for compatible Unreal Engine 4 (UE4) game builds.
+**SimpleX Toolkit v1.1.0** is an iOS runtime inspection toolkit with an Unreal Engine 4 dumper and an experimental Unity IL2CPP metadata extractor.
 
-The current release targets UE4 and is designed to work across multiple UE4-based game titles when their runtime layout and profile are compatible. It is developer/research tooling for inspecting a running UE4 process and generating structured metadata and SDK outputs; it does not promise universal compatibility with every UE4 fork or game build.
+The floating toolkit interface is designed to appear in normal UIKit user apps. When the current app does not match a supported engine, the menu reports **NOT SUPPORTED FOR THIS APP**, lists supported engine families, and keeps Logs, Files, Mach-O inventory, and the community contact link available.
 
 ## Downloads
 
 - [Latest iOS dylib](Latest/SimpleXDumper.dylib)
 - [Latest rootless Theos package](Latest/SimpleXDumper.deb)
-- [Archived v1.0.0 dylib](Archive/v1.0.0/SimpleXDumper.dylib)
-- [Archived v1.0.0 rootless package](Archive/v1.0.0/SimpleXDumper.deb)
-- [v1.0.0 changelog](Archive/v1.0.0/CHANGELOG.md)
+- [Archived v1.1.0 dylib](Archive/v1.1.0/SimpleXDumper.dylib)
+- [Archived v1.1.0 rootless package](Archive/v1.1.0/SimpleXDumper.deb)
+- [v1.1.0 changelog](Archive/v1.1.0/CHANGELOG.md)
+- [Previous v1.0.0 archive](Archive/v1.0.0/)
 
-## UE4 capabilities
+## Engine support
 
-Depending on the target game's engine version, memory layout, and profile compatibility, SimpleXDumper can:
+| Engine | Status | Capability |
+| --- | --- | --- |
+| Unreal Engine 4 | Supported when runtime layout/profile is compatible | object/name discovery, reflection output, generated C++ SDK, .usmap mappings, IDA/Ghidra mappings, Dumpspace JSON |
+| Unity IL2CPP | Experimental | global-metadata.dat validation, metadata string extraction, managed string literal extraction, raw metadata preservation |
+| Unity Mono | Not supported | no Mono runtime dumper in this release |
+| Other engines | Not supported | toolkit menu and general iOS inspection utilities remain available |
 
-- Locate and inspect UE4 runtime structures, including global object and name collections.
-- Detect engine offsets and object/name container layouts at runtime.
-- Generate object dumps and reflection metadata.
-- Generate a C++ SDK from discovered runtime metadata.
-- Generate UE4 `.usmap` mappings, IDA `.idmap` mappings, and Dumpspace JSON.
-- Apply title-specific profiles for custom offsets, pointer layouts, or encrypted UE4 fields.
-- Produce timestamped `Dump_...` output and a `SimpleXDumper.log` log.
+### Unreal Engine 4
 
-It is intended as multi-title UE4 tooling. UE4 forks, engine revisions, custom allocators, encrypted fields, and anti-tamper behavior can require a compatible profile or additional work. A title should be treated as supported only after its runtime layout has been validated.
+The UE4 pipeline retains the existing UEAnalyzerKitty discovery, automatic layout/offset detection, and per-title profile/decryption hooks. It can generate GObjects and reflection dumps, a C++ SDK with a validation test suite, UE4 mappings, IDA/Ghidra mapping output, and Dumpspace JSON. Compatibility depends on the game build, engine layout, and profile support; not every UE4 fork is guaranteed to work.
 
-## Platform and package
+### Unity IL2CPP — experimental
 
-| Item | v1.0.0 |
-| --- | --- |
-| Platform | iOS |
-| Architecture | arm64 |
-| Deployment target | iOS 14.0 |
-| Package | Rootless Theos `.deb` |
-| Runtime library | `SimpleXDumper.dylib` |
-| Engine support | UE4 only |
+The new iOS Unity component locates global-metadata.dat in common app-bundle locations, validates the metadata magic/version/section ranges, preserves the raw file, and exports MetadataStrings.txt and StringLiterals.txt alongside MetadataHeader.txt and Summary.txt.
 
-The `.deb` is a rootless jailbreak tweak package. The standalone dylib requires a compatible injection/loading setup; it does not self-inject on stock iOS. The distributed binaries are unsigned.
+The current parser accepts metadata versions 16–35 with the expected stable header prefix and 8-byte string-literal records. Version 38+ is rejected because its header/index layout changed. This is **not yet a complete Unity dumper**: assembly/type/field/method reconstruction, generics, native method address mapping, registration discovery, and protected metadata decryption are not implemented.
 
-## Future engine support
+## Other toolkit modules
 
-- **Unity — planned.** Unity runtime support is not implemented in v1.0.0.
-- Additional engine families and game-specific UE4 profiles may be evaluated for future releases.
+- Loaded app Mach-O image inventory using dyld enumeration; the UE module picker no longer relies on selecting only the two largest frameworks.
+- KittyMemory-backed read-only memory-region and pointer inspection, safe scanning, and Mach-O inspection.
+- Runtime logs and an in-app Files browser with multi-select, ZIP compression, delete, and the native iOS share sheet.
+- UE4 runtime discovery report for GNames, GObjects, GEngine, GWorld, and ProcessEvent offsets when found.
 
-## Discord / credits:
+KittyMemory is used as a low-level inspection dependency; SimpleX Toolkit does not expose memory patch/write controls.
+
+## Compatibility
+
+- Platform: iOS only
+- Architecture: arm64
+- Deployment target: iOS 14.0
+- Package: rootless Theos .deb plus matching dylib
+- Existing package identifier: com.simplex.simplexdumper (preserved for upgrades)
+- Binary filenames remain SimpleXDumper.dylib and SimpleXDumper.deb for compatibility
+
+The distributed binaries are unsigned. A standalone dylib requires a compatible injection/loading setup; it does not self-inject on stock iOS. Android is out of scope.
+
+## Contact and credits
+
+The in-app menu subtitle contains a clickable community/contact link (no separate credits button):
 
 https://discord.gg/Kr2pvPfEUR
 
-## Release structure
-
-- `Latest/` contains only the current `.dylib` and `.deb`.
-- `Archive/v1.0.0/` preserves the versioned `.dylib`, `.deb`, and changelog.
-
-This is a public binary-release repository. The full project source and detailed Theos build files remain in the private `simplexserver/Dumper-Build` repository. This repository contains only a minimal orchestration workflow: it checks out the private source on an ephemeral runner and publishes the release binaries and version changelog. It does not upload source files, debug symbols, or complete compiler logs; GitHub Actions status and failure diagnostics remain visible. To run it, configure the `DUMPER_SOURCE_TOKEN` Actions secret with a fine-grained token limited to `simplexserver/Dumper-Build` and `Contents: Read` permission.
-
-Use the tool only with games, apps, and devices that you own or are authorized to inspect.
+Use this tooling only with apps, games, and devices that are owned or authorized for inspection.
