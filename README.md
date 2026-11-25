@@ -1,22 +1,33 @@
 # SimpleX Toolkit — iOS Runtime & Engine Toolkit
 
-**SimpleX Toolkit v1.2.2** is an iOS runtime inspection and engine dumper with an Unreal Engine 4 pipeline and a live Unity IL2CPP runtime dumper.
+**SimpleX Toolkit v1.3.0** is an iOS-only runtime inspection toolkit with Unreal Engine 4 and Unity IL2CPP dumpers.
 
-## Files browser
+## Files and Game File Manager
 
-Tap a folder to open it or a file to inspect it. Select mode adds checkboxes for batch sharing, renaming, and deleting. The plus button creates folders. Media and documents use iOS Quick Look; source and text files use a monospace viewer. Large text files load in 128 KiB pages instead of all at once into memory. Text files up to 512 KiB can be edited and atomically saved; bigger files stay paged and read-only. Directory scans run off the main thread.
+- Tap a folder to open it and tap a file to inspect/edit it.
+- Text/code files open directly in the editor. Save stays grey until content changes, then turns blue.
+- Find highlights every case-insensitive match and shows a match count with previous/next navigation.
+- Large text files remain paged to bound memory use.
+- Recursive file search is case-insensitive and shows the containing folder for each result.
+- Sort by name, size or modified date; filter by minimum size (1 MB / 10 MB).
+- Long-press a file or folder for Open, Export / Share, Get Info, Rename, Move and Delete.
+- Drag files/folders into folders to move them.
+- The plus control creates either a folder or an empty file. Enter the complete file name and extension yourself.
+- Game File Manager exposes Game Folder, Documents, Library, Caches, Temporary and App Bundle.
+- App Bundle is browse-only; file operations and editing are disabled there.
 
 ## Logs console
 
-Filters include All, Dump, Files, Unity, System, and Other, plus live search with the native iOS keyboard. Export shares whatever matches the active filter and search query. Tap outside the panel, hit close, or swipe up to dismiss it. History caps at 1,200 entries. Startup logs include timestamp, bundle ID, game/app version, iOS version, and hardware model.
+Filters include All, Dump, Files, Unity, System, and Other, plus live search with the native iOS keyboard. Export shares the current filter/search result. Tap outside the panel, hit close, or swipe up to dismiss it. History caps at 1,200 entries. Startup logs include timestamp, bundle ID, game/app version, iOS version, and hardware model.
 
 ## Downloads
 
 - [Latest iOS dylib](Latest/SimpleXDumper.dylib)
 - [Latest rootless package](Latest/SimpleXDumper.deb)
-- [Archived v1.2.2 dylib](Archive/v1.2.2/SimpleXDumper.dylib)
-- [Archived v1.2.2 package](Archive/v1.2.2/SimpleXDumper.deb)
-- [v1.2.2 changelog](Archive/v1.2.2/CHANGELOG.md)
+- [Archived v1.3.0 dylib](Archive/v1.3.0/SimpleXDumper.dylib)
+- [Archived v1.3.0 package](Archive/v1.3.0/SimpleXDumper.deb)
+- [v1.3.0 changelog](Archive/v1.3.0/CHANGELOG.md)
+- [Previous v1.2.2 archive](Archive/v1.2.2/)
 - [Previous v1.2.0 archive](Archive/v1.2.0/)
 - [Previous v1.1.0 archive](Archive/v1.1.0/)
 - [Previous v1.0.0 archive](Archive/v1.0.0/)
@@ -26,35 +37,22 @@ Filters include All, Dump, Files, Unity, System, and Other, plus live search wit
 | Engine | Status | What it does |
 | --- | --- | --- |
 | Unreal Engine 4 | Supported when runtime layout/profile matches | object/name discovery, reflection dump, C++ SDK, .usmap, IDA/Ghidra mappings, Dumpspace JSON |
-| Unity IL2CPP | Live runtime dumper added; needs per-game testing | assemblies/classes, fields/offsets, properties, methods/parameters, method RVAs, IDA Script.json, optional global-metadata export |
+| Unity IL2CPP | Live runtime dumper integrated; per-game validation required | assemblies/classes, fields/offsets, properties, methods/parameters, method RVAs, IDA Script.json, optional metadata export |
 | Unity Mono | Not supported | no Mono runtime backend |
-| Other engines | Not supported | opens in unsupported-app mode |
+| Other engines | Unsupported for engine dumping | generic Game File Manager remains available |
 
-### Unreal Engine 4
-
-The UE4 pipeline keeps layout/offset detection and per-game profile/decryption hooks. It outputs GObjects/reflection data, a C++ SDK with a validation suite, .usmap mappings, IDA/Ghidra mappings, and Dumpspace JSON. Support depends on the game build and runtime layout—not every UE4 fork works out of the box.
-
-### Unity IL2CPP
-
-The Unity dumper runs inside the live iOS app. It grabs IL2CPP exports from `UnityFramework` or `libil2cpp`, gets the domain, walks loaded assemblies, images, and classes, and writes:
-
-- `Dump.cs` — combined runtime metadata declarations
-- `Assembly/*.cs` — per-image/assembly declarations
-- fields and field offsets, properties, methods, parameters, and method RVAs
-- `Script.json` — native method RVA/name entries for IDA
-- `Summary.txt` and `SimpleXUnity.log`
-- optional raw metadata/string output when a supported `global-metadata.dat` layout is present
+Android isn't supported.
 
 ## Compatibility
 
 - Platform: iOS only
 - Architecture: arm64
 - Deployment target: iOS 14.0+
-- Package: rootless Theos `.deb` plus matching dylib
+- Package: rootless Theos .deb plus matching dylib
 - Package ID: `com.simplex.simplexdumper` (kept for upgrades)
 - Binary names: `SimpleXDumper.dylib` and `SimpleXDumper.deb`
 
-Android isn't supported.
+App Bundle is read-only. The toolkit does not spoof IDFV or device identity.
 
 ## Contact
 

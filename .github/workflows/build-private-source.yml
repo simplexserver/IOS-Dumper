@@ -102,16 +102,23 @@ jobs:
           grep -Fq 'Unreal Engine 4 Dumper' Dumper/main_ios.mm
           grep -Fq 'Unity IL2CPP Dumper' Dumper/main_ios.mm
           grep -Fq 'LogStartupDiagnostics' Dumper/main_ios.mm
-          grep -Fq 'renameSelection' Dumper/UI/iOS/KittyFileBrowser.mm
-          grep -Fq 'exportLogs' Dumper/UI/iOS/KittyConsoleOverlay.mm
+          grep -Fq 'contextMenuConfigurationForRowAtIndexPath' Dumper/UI/iOS/KittyFileBrowser.mm
+          grep -Fq 'showGameFilesInView' Dumper/UI/iOS/KittyFileBrowser.mm
+          grep -Fq 'itemsForBeginningDragSession' Dumper/UI/iOS/KittyFileBrowser.mm
+          grep -Fq 'promptCreateItemIsDirectory' Dumper/UI/iOS/KittyFileBrowser.mm
+          grep -Fq 'applySearchHighlights' Dumper/UI/iOS/KittyFilePreviewController.mm
+          grep -Fq 'findNextMatch' Dumper/UI/iOS/KittyFilePreviewController.mm
+          grep -Fq 'readOnlyMode' Dumper/UI/iOS/KittyFilePreviewController.mm
           grep -Fq 'QuickLook' Theos/Makefile
           grep -Fq 'Supported engines: UE4 • Unity IL2CPP' Dumper/main_ios.mm
           grep -Fq 'kTripletSectionCount = 31' Dumper/Engine/Unity/UnityMetadataDumper.cpp
           ! grep -Fq 'Discord / Credits' Dumper/main_ios.mm
           grep -Fq 'https://discord.gg/Kr2pvPfEUR' Dumper/main_ios.mm
           grep -Fq 'SimpleXToolkit.log' Dumper/DumperMain.cpp
-          grep -Fq 'Dump_' Dumper/Generator/Generators/Generator.cpp
-          grep -Fq '1.2.2' VERSION
+          grep -Fq 'OutputRoot / "Dump"' Dumper/Generator/Generators/Generator.cpp
+          grep -Fq 'UnityRoot / "Dump"' Dumper/main_ios.mm
+          ! grep -Fq 'Dump_' Dumper/Generator/Generators/Generator.cpp
+          grep -Fq '1.3.0' VERSION
           echo "Source, branding, UE4, Unity runtime, vendored dependencies, and credits checks passed."
 
       - name: Install Linux build dependencies
