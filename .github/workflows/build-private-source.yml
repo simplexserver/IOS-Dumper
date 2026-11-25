@@ -102,7 +102,7 @@ jobs:
           grep -Fq 'https://discord.gg/Kr2pvPfEUR' Dumper/main_ios.mm
           grep -Fq 'SimpleXToolkit.log' Dumper/DumperMain.cpp
           grep -Fq 'Dump_' Dumper/Generator/Generators/Generator.cpp
-          grep -Fq '1.2.0' VERSION
+          grep -Fq '1.2.1' VERSION
           echo "Source, branding, UE4, Unity runtime, vendored dependencies, and credits checks passed."
 
       - name: Install Linux build dependencies
