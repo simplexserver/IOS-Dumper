@@ -1,3 +1,3 @@
 Build SimpleX Toolkit v1.3.0 from simplexserver/Dumper-Build main.
-Add full recursive app-container file manager, direct editor with all-match highlighting and dirty Save state, long-press actions, drag/drop, Game File Manager roots, and simple Dump folder names.
-Source commit: 58cd6b8f379deba14de36f6c5eb350c07f29fb6a
+Use the UIKit UIContextMenuConfiguration class factory and supported UIAction factory to fix compile errors.
+Source commit: 87a7c4cfe9e31a45ee2b42f3301b0619f8dfb0fc
