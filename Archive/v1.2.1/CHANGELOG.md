@@ -5,6 +5,14 @@
 - Read the current assembly count directly from the initialized IL2CPP domain, then invoke the dumper once its output paths are established.
 - Ensure Script.json is created inside the per-run Dump_<bundle>_<timestamp> directory rather than attempting to open it at the filesystem root.
 
+## Metadata version 39 and menu status follow-up
+- Displays the supported engine list on every app, while preserving the unsupported-app status and contact link.
+- Adds 31-section triplet header parsing for metadata versions 32–39.
+- Validates section offsets, sizes, and counts; preserves raw metadata and exports the metadata string heap.
+- Explicitly skips v39 variable-width literal/type/method record decoding in the legacy sidecar.
+- Requires IL2CPP thread attach/detach exports for worker-thread enumeration.
+- Adds portable tests for v35, v38/v39, malformed headers/sections, and unsupported versions.
+
 ## compatibility
 - iOS only, arm64, iOS 14.0 deployment target, rootless Theos package.
 - Preserves the package identifier com.simplex.simplexdumper and the existing SimpleXDumper binary filenames.
