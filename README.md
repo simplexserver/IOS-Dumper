@@ -22,9 +22,9 @@ Filters include All, Dump, Files, Unity, System, and Other, plus live search wit
 
 ## Downloads
 
-- [Latest iOS dylib](Latest/SimpleXDumper.dylib)
+- [Latest iOS dylib](Latest/SimpleXDumper-v1.3.0.dylib)
 - [Latest rootless package](Latest/SimpleXDumper.deb)
-- [Archived v1.3.0 dylib](Archive/v1.3.0/SimpleXDumper.dylib)
+- [Archived v1.3.0 dylib](Archive/v1.3.0/SimpleXDumper-v1.3.0.dylib)
 - [Archived v1.3.0 package](Archive/v1.3.0/SimpleXDumper.deb)
 - [v1.3.0 changelog](Archive/v1.3.0/CHANGELOG.md)
 - [Previous v1.2.2 archive](Archive/v1.2.2/)
@@ -50,7 +50,8 @@ Android isn't supported.
 - Deployment target: iOS 14.0+
 - Package: rootless Theos .deb plus matching dylib
 - Package ID: `com.simplex.simplexdumper` (kept for upgrades)
-- Binary names: `SimpleXDumper.dylib` and `SimpleXDumper.deb`
+- Standalone dylib filename: `SimpleXDumper-v1.3.0.dylib` (versioned to distinguish releases).
+- The rootless `.deb` keeps the installed loader filename `SimpleXDumper.dylib` for compatibility.
 
 App Bundle is read-only. The toolkit does not spoof IDFV or device identity.
 

@@ -13,6 +13,7 @@
 - UE4 and Unity output folders use Dump, then Dump 2, etc. Existing dumps are retained on collisions.
 
 ## Compatibility and safety
+- The standalone release dylib now includes its version in the filename (`SimpleXDumper-v1.3.0.dylib`); the installed package keeps the stable loader filename.
 - iOS only, arm64, iOS 14.0 deployment target, rootless Theos package.
 - Existing UE4 and Unity IL2CPP dump paths remain in place.
 - Android remains out of scope.

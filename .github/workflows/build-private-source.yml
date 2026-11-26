@@ -213,26 +213,29 @@ jobs:
           DYLIB="$(find "$ROOTFS" -type f -name 'SimpleXDumper.dylib' -print -quit)"
           test -n "$DYLIB"
 
-          cp "$DYLIB" "$GITHUB_WORKSPACE/dist/SimpleXDumper.dylib"
+          cp "$DYLIB" "$GITHUB_WORKSPACE/dist/SimpleXDumper-v${VERSION}.dylib"
           cp "$DEB" "$GITHUB_WORKSPACE/dist/SimpleXDumper.deb"
           cp "$GITHUB_WORKSPACE/source/CHANGELOG.md" "$GITHUB_WORKSPACE/dist/CHANGELOG.md"
           printf 'VERSION=%s\nSOURCE_SHA=%s\n' "$VERSION" "$(git -C "$GITHUB_WORKSPACE/source" rev-parse HEAD)" > "$GITHUB_WORKSPACE/dist/BUILD_INFO.txt"
 
       - name: Verify Mach-O, architecture, and package identity
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
         run: |
           set -euo pipefail
-          file dist/SimpleXDumper.dylib
-          llvm-lipo -info dist/SimpleXDumper.dylib
-          file dist/SimpleXDumper.dylib | grep -q 'Mach-O'
-          llvm-lipo -archs dist/SimpleXDumper.dylib | grep -qw arm64
+          DYLIB="dist/SimpleXDumper-v${VERSION}.dylib"
+          file "$DYLIB"
+          llvm-lipo -info "$DYLIB"
+          file "$DYLIB" | grep -q 'Mach-O'
+          llvm-lipo -archs "$DYLIB" | grep -qw arm64
           [[ "$(dpkg-deb -f dist/SimpleXDumper.deb Package)" == "com.simplex.simplexdumper" ]]
           [[ "$(dpkg-deb -f dist/SimpleXDumper.deb Version)" == "${{ steps.version.outputs.value }}" ]]
-          strings dist/SimpleXDumper.dylib | grep -Fq 'SimpleXDumper'
-          if strings dist/SimpleXDumper.dylib | grep -Fq 'MobileDumper-7'; then
+          strings "$DYLIB" | grep -Fq 'SimpleXDumper'
+          if strings "$DYLIB" | grep -Fq 'MobileDumper-7'; then
             echo "::error::A stale product string remains in the dylib"
             exit 1
           fi
-          sha256sum dist/SimpleXDumper.dylib dist/SimpleXDumper.deb > dist/SHA256SUMS.txt
+          sha256sum "$DYLIB" dist/SimpleXDumper.deb > dist/SHA256SUMS.txt
           cat dist/SHA256SUMS.txt
 
       - name: Upload binary-only build artifact
@@ -240,7 +243,7 @@ jobs:
         with:
           name: SimpleXToolkit-iOS-v${{ steps.version.outputs.value }}-${{ github.run_number }}
           path: |
-            dist/SimpleXDumper.dylib
+            dist/SimpleXDumper-v${{ steps.version.outputs.value }}.dylib
             dist/SimpleXDumper.deb
             dist/SHA256SUMS.txt
             dist/BUILD_INFO.txt
@@ -258,8 +261,11 @@ jobs:
           rm -rf "$RELEASE_DIR/Archive/v$VERSION"
           mkdir -p "$RELEASE_DIR/Archive/v$VERSION"
 
-          cp dist/SimpleXDumper.dylib dist/SimpleXDumper.deb "$RELEASE_DIR/Latest/"
-          cp dist/SimpleXDumper.dylib dist/SimpleXDumper.deb "$RELEASE_DIR/Archive/v$VERSION/"
+          DYLIB_NAME="SimpleXDumper-v${VERSION}.dylib"
+          cp "dist/$DYLIB_NAME" "$RELEASE_DIR/Latest/$DYLIB_NAME"
+          cp "dist/$DYLIB_NAME" "$RELEASE_DIR/Archive/v$VERSION/$DYLIB_NAME"
+          cp dist/SimpleXDumper.deb "$RELEASE_DIR/Latest/"
+          cp dist/SimpleXDumper.deb "$RELEASE_DIR/Archive/v$VERSION/"
           cp dist/CHANGELOG.md "$RELEASE_DIR/Archive/v$VERSION/CHANGELOG.md"
           cp source/VERSION "$RELEASE_DIR/VERSION"
 
@@ -273,6 +279,10 @@ jobs:
           content = readme.read_text(encoding="utf-8")
           content = re.sub(r"\*\*SimpleX Toolkit v[^*]+\*\*", f"**SimpleX Toolkit v{version}**", content, count=1)
           content = re.sub(r"Archive/v[0-9.]+/CHANGELOG\.md", f"Archive/v{version}/CHANGELOG.md", content)
+          content = re.sub(r"Latest/SimpleXDumper(?:-v[0-9.]+)?\.dylib",
+                           f"Latest/SimpleXDumper-v{version}.dylib", content)
+          content = re.sub(r"Archive/v[0-9.]+/SimpleXDumper(?:-v[0-9.]+)?\.dylib",
+                           f"Archive/v{version}/SimpleXDumper-v{version}.dylib", content)
           readme.write_text(content, encoding="utf-8")
           PY
 
