@@ -1,3 +1,3 @@
 Build SimpleX Toolkit v1.3.1 from simplexserver/Dumper-Build main.
-Add generic legacy IL2CPP metadata-v23 indexing, metadata-only fallback, validated ranges, and regression fixtures.
-Source commit: 8b7f4b4ad2b7bc2eaf089e41d77de2a20c3409ce
+Fix unused argument in generic legacy IL2CPP metadata index range validation.
+Source commit: acc0de668aa64190d174f7bb80ecc95955d9aa57
