@@ -90,6 +90,8 @@ jobs:
           test -s Dumper/UI/iOS/KittyFilePreviewController.h
           test -s Dumper/UI/iOS/KittyFilePreviewController.mm
           test -s Dumper/Engine/Unity/UnityMetadataDumper.cpp
+          test -s Dumper/Engine/Unity/UnityMetadataIndex.h
+          test -s Dumper/Engine/Unity/UnityMetadataIndex.cpp
           test -s Dumper/Engine/Unity/UnityRuntimeDumper.cpp
           test -s tests/unity_metadata_test.cpp
           test -s Dumper/Engine/Unity/Runtime/Dumper.cpp
@@ -112,13 +114,15 @@ jobs:
           grep -Fq 'QuickLook' Theos/Makefile
           grep -Fq 'Supported engines: UE4 • Unity IL2CPP' Dumper/main_ios.mm
           grep -Fq 'kTripletSectionCount = 31' Dumper/Engine/Unity/UnityMetadataDumper.cpp
+          grep -Fq 'DumpLegacyMetadataIndexV23' Dumper/Engine/Unity/UnityMetadataIndex.cpp
+          grep -Fq 'metadata-only fallback' Dumper/Engine/Unity/UnityRuntimeDumper.cpp
           ! grep -Fq 'Discord / Credits' Dumper/main_ios.mm
           grep -Fq 'https://discord.gg/Kr2pvPfEUR' Dumper/main_ios.mm
           grep -Fq 'SimpleXToolkit.log' Dumper/DumperMain.cpp
           grep -Fq 'OutputRoot / "Dump"' Dumper/Generator/Generators/Generator.cpp
           grep -Fq 'UnityRoot / "Dump"' Dumper/main_ios.mm
           ! grep -Fq 'Dump_' Dumper/Generator/Generators/Generator.cpp
-          grep -Fq '1.3.0' VERSION
+          grep -Fq '1.3.1' VERSION
           echo "Source, branding, UE4, Unity runtime, vendored dependencies, and credits checks passed."
 
       - name: Install Linux build dependencies
@@ -137,6 +141,7 @@ jobs:
           set -euo pipefail
           g++ -std=c++20 -Wall -Wextra -Werror -I Dumper/Engine/Unity \
             Dumper/Engine/Unity/UnityMetadataDumper.cpp \
+            Dumper/Engine/Unity/UnityMetadataIndex.cpp \
             tests/unity_metadata_test.cpp \
             -o /tmp/simplex-unity-metadata-test
           /tmp/simplex-unity-metadata-test
