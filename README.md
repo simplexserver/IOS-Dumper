@@ -53,8 +53,6 @@ Android isn't supported.
 - Standalone dylib filename: `SimpleXDumper-v1.3.0.dylib` (versioned to distinguish releases).
 - The rootless `.deb` keeps the installed loader filename `SimpleXDumper.dylib` for compatibility.
 
-App Bundle is read-only. The toolkit does not spoof IDFV or device identity.
-
 ## Contact
 
 Contact / credit link: https://discord.gg/Kr2pvPfEUR
